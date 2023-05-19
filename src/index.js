@@ -8,7 +8,21 @@ async function getWeatherData(city) {
 }
 
 function processData(data) {
-  
+  let {
+    name, 
+    country 
+  } = data.location;
+  console.log('City: ' + name + ',' + country);
+  let {
+    condition: {text: currentText, icon: currentIcon},
+    temp_c, 
+    feelslike_c,
+    cloud,
+    wind_kph,
+    precip_mm,
+    humidity
+  } = data.current;
+  console.log("Current: " + currentText + " / " + temp_c + " / " + feelslike_c + " / " + cloud + " / " + wind_kph + " / " + precip_mm + " / " + humidity)
   //location
     //weatherData.location.name
     //weatherData.location.country
