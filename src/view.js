@@ -1,0 +1,1 @@
+import getWeather from './weatherapi.js'
