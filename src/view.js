@@ -1,11 +1,13 @@
-import getWeather from './weatherapi.js'
+import getWeather, { search } from './weatherapi.js'
 
 //Default values
 const DEFAULT_CITY = 'Toronto'
 //Select elements
+const CONTAINER_SEARCH = document.querySelector('#search');
 const CONTAINER_CURRENT = document.querySelector('#current');
 const CONTAINER_FORECAST = document.querySelector('#forecast');
 const HEADER = document.querySelector('#page-header');
+const INPUT_CITY = document.querySelector('#city');
 //Text strings
 const HEADER_TEXT = 'Weather in'
 
@@ -41,13 +43,31 @@ function renderForecast(data) {
 
 function addListenerToButton() {
   const submitButton = document.querySelector('#enter-city');
-  let newCity = document.querySelector('#city');
 
   submitButton.addEventListener('click', e => {
     e.preventDefault();
-    getWeather(newCity.value)
+    clarify(INPUT_CITY.value);
+    getWeather(INPUT_CITY.value)
     .then(data => {
       renderPage(data);
     });
   })
+}
+
+async function clarify(city) {
+  let cities = await search(city);
+  if (cities.length > 1) { //More than one possible city in search results
+    cities.forEach(city => {
+      let cityOptionDiv = document.createElement('div');
+      let cityOptionText = document.createElement('p');
+      
+      cityOptionDiv.classList.add('city-option');
+      cityOptionText.textContent = `${city.name}, ${city.region}, ${city.country}`;
+
+      CONTAINER_SEARCH.appendChild(cityOptionDiv);
+      cityOptionDiv.appendChild(cityOptionText);
+    });
+  } else if (cities.length === 0) { //No cities in search result
+    console.log('No cities found');
+  }
 }
