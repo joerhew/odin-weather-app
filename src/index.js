@@ -1,5 +1,6 @@
-import getWeather from './weatherapi.js'
+import getWeather from './weatherapi.js';
+import init from './view.js';
 
 let city = 'Toronto';
 
-getWeather(city).then(data => console.log(data));
+init();

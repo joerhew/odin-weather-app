@@ -19,19 +19,11 @@ function processData(data) {
     name, 
     country 
   } = data.location;
-  let {
-    condition: {text: currentText, icon: currentIcon},
-    temp_c: currentTemp_c, 
-    feelslike_c: currentFeelslike_c,
-    cloud: currentCloud,
-    wind_kph: currentWind_kph,
-    precip_mm: currentPrecip_mm,
-    humidity: currentHumidity
-  } = data.current;
+  let current = data.current;
   let forecast = data.forecast.forecastday;
   return { 
     name, country, //location 
-    currentText, currentIcon, currentTemp_c, currentFeelslike_c, currentCloud, currentWind_kph, currentPrecip_mm, currentHumidity, //current
+    current, //current
     forecast //forecast
   }
 }
