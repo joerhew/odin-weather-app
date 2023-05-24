@@ -1,0 +1,46 @@
+:root {
+  --white: #FFFFFF;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--white);
+}
+
+.container {
+  max-width: 1000px;
+}
+
+#header {
+  border: 1px solid black;
+  text-align: center;
+  padding: 1rem;
+}
+
+#search {
+  border: 1px solid black;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#current {
+  border: 1px solid black;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.current-condition {
+  text-align: center;
+}
+
+#forecast {
+  border: 1px solid black;
+  display: grid;
+  padding: 1rem;
+}

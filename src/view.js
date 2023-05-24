@@ -34,18 +34,56 @@ function renderHeader(data) {
 
 function renderCurrentWeather(data) {
   console.log(data.current)
-  CONTAINER_CURRENT.textContent = data.current.feelslike_c;
+  
+  //Current condition text and icon
+  let currentConditionDiv = createHtmlElement('div', '', ['current-condition'], CONTAINER_CURRENT);
+
+  let currentConditionIcon = document.createElement('img');
+  currentConditionIcon.src = data.current.condition.icon
+  currentConditionDiv.appendChild(currentConditionIcon);
+
+  let currentTempDiv = createHtmlElement('div', `${data.current.temp_c} °C`, ['current-temp'], currentConditionDiv);
+  let currentConditionText = createHtmlElement('p', data.current.condition.text, [], currentConditionDiv);
+  
+  //Current condition - other info
+  let currentMiscDiv = createHtmlElement('div', '', ['current-other'], CONTAINER_CURRENT);
+
+  let currentFeelsLikeDiv = createHtmlElement('div', `Feels like: ${data.current.feelslike_c} °C`, ['current-feels-like'], currentMiscDiv);
+  let currentWind = createHtmlElement('div', `Wind speed: ${data.current.wind_kph} kph`, ['current-wind'], currentMiscDiv);
+  let currentHumidity = createHtmlElement('div', `Humidity: ${data.current.humidity}%`, ['current-humidity'], currentMiscDiv);
+  let currentPrecip = createHtmlElement('div', `Precipitation: ${data.current.precip_mm} mm`, ['current-precip'], currentMiscDiv);
+  
+  /*CONTAINER_CURRENT.textContent += data.current.temp_c;
+  CONTAINER_CURRENT.textContent += data.current.feelslike_c;
+  CONTAINER_CURRENT.textContent += data.current.wind_kph;
+  CONTAINER_CURRENT.textContent += data.current.humidity;
+  CONTAINER_CURRENT.textContent += data.current.precip_mm;*/
+}
+
+function createHtmlElement(elementType, innerText, classes, parentNode) {
+  let newElement = document.createElement(elementType);
+  for (let name of classes) {
+    newElement.classList.add(name);
+  }
+  if (innerText) {
+    newElement.innerText = innerText
+  };
+  parentNode.appendChild(newElement);
+
+  return newElement;
 }
 
 function renderForecast(data) {
   console.log(data.forecast)
-  CONTAINER_FORECAST.textContent = data.forecast[1].date;
+  data.forecast.forEach(day => {
+    CONTAINER_FORECAST.textContent += day.date;  
+  })
 }
 
 function addListenerToButton() {
   BTN_SUBMIT.addEventListener('click', e => {
     e.preventDefault();
-    clearPrevCitySuggestions();
+    clearPrevData();
     clarify(INPUT_CITY.value);
     getWeather(INPUT_CITY.value)
     .then(data => {
@@ -54,16 +92,30 @@ function addListenerToButton() {
   })
 }
 
+function clearPrevData() {
+  clearPrevCitySuggestions();
+  clear(CONTAINER_CURRENT);
+  clear(CONTAINER_FORECAST);
+}
+
 function clearPrevCitySuggestions() {
+  let previousSuggestionTextDiv = document.querySelector('.alt-suggestion');
   let previousFirstChoiceDiv = document.querySelector('.first-choice-city');
   let previousSuggestionDivs = document.querySelectorAll('.city-option');
   
   if (previousFirstChoiceDiv) {
     previousFirstChoiceDiv.remove();
   }
+  if (previousSuggestionTextDiv) {
+    previousSuggestionTextDiv.remove();
+  }
   if (previousSuggestionDivs.length >= 1) {
     previousSuggestionDivs.forEach(div => div.remove());
   }
+}
+
+function clear(div) {
+  div.innerHTML = '';
 }
 
 async function clarify(city) {
@@ -72,13 +124,25 @@ async function clarify(city) {
     let firstchoiceCityText = document.createElement('p');
 
     firstChoiceCityDiv.classList.add('first-choice-city');
-    firstchoiceCityText.textContent = `Showing the weather for ${city.name}, ${city.region}, ${city.country}`;
+    firstchoiceCityText.innerHTML = `Showing the weather for 
+                                      <span class='first-choice-city-text'>
+                                      ${city.name}, ${city.region}, ${city.country}
+                                      </span>`;
 
     CONTAINER_SEARCH.appendChild(firstChoiceCityDiv);
     firstChoiceCityDiv.appendChild(firstchoiceCityText);
   }
 
   function displayListOfAlternatives(cities) {
+    let alternativeSuggestionDiv = document.createElement('div');
+    let alternativeSuggestionText = document.createElement('p');
+
+    alternativeSuggestionDiv.classList.add('alt-suggestion');
+    alternativeSuggestionText.textContent = 'Or did you mean one of the following cities?'
+
+    CONTAINER_SEARCH.appendChild(alternativeSuggestionDiv);
+    alternativeSuggestionDiv.appendChild(alternativeSuggestionText);
+
     cities.forEach(city => {
       let cityOptionDiv = document.createElement('div');
       let cityOptionText = document.createElement('p');
