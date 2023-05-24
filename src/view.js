@@ -8,6 +8,7 @@ const CONTAINER_CURRENT = document.querySelector('#current');
 const CONTAINER_FORECAST = document.querySelector('#forecast');
 const HEADER = document.querySelector('#page-header');
 const INPUT_CITY = document.querySelector('#city');
+const BTN_SUBMIT = document.querySelector('#enter-city');
 //Text strings
 const HEADER_TEXT = 'Weather in'
 
@@ -42,10 +43,9 @@ function renderForecast(data) {
 }
 
 function addListenerToButton() {
-  const submitButton = document.querySelector('#enter-city');
-
-  submitButton.addEventListener('click', e => {
+  BTN_SUBMIT.addEventListener('click', e => {
     e.preventDefault();
+    clearPrevCitySuggestions();
     clarify(INPUT_CITY.value);
     getWeather(INPUT_CITY.value)
     .then(data => {
@@ -54,9 +54,31 @@ function addListenerToButton() {
   })
 }
 
+function clearPrevCitySuggestions() {
+  let previousFirstChoiceDiv = document.querySelector('.first-choice-city');
+  let previousSuggestionDivs = document.querySelectorAll('.city-option');
+  
+  if (previousFirstChoiceDiv) {
+    previousFirstChoiceDiv.remove();
+  }
+  if (previousSuggestionDivs.length >= 1) {
+    previousSuggestionDivs.forEach(div => div.remove());
+  }
+}
+
 async function clarify(city) {
-  let cities = await search(city);
-  if (cities.length > 1) { //More than one possible city in search results
+  function displayFirstChoiceCity(city) {
+    let firstChoiceCityDiv = document.createElement('div');
+    let firstchoiceCityText = document.createElement('p');
+
+    firstChoiceCityDiv.classList.add('first-choice-city');
+    firstchoiceCityText.textContent = `Showing the weather for ${city.name}, ${city.region}, ${city.country}`;
+
+    CONTAINER_SEARCH.appendChild(firstChoiceCityDiv);
+    firstChoiceCityDiv.appendChild(firstchoiceCityText);
+  }
+
+  function displayListOfAlternatives(cities) {
     cities.forEach(city => {
       let cityOptionDiv = document.createElement('div');
       let cityOptionText = document.createElement('p');
@@ -66,8 +88,20 @@ async function clarify(city) {
 
       CONTAINER_SEARCH.appendChild(cityOptionDiv);
       cityOptionDiv.appendChild(cityOptionText);
+
+      cityOptionDiv.addEventListener('click', () => {
+        INPUT_CITY.value = cityOptionDiv.children[0].innerText;
+        BTN_SUBMIT.click();
+      }) 
     });
-  } else if (cities.length === 0) { //No cities in search result
+  }
+  
+  let searchResults = await search(city);
+
+  if (searchResults.listOfAlternativeCities.length >= 1) { //More than one possible city in search results
+    displayFirstChoiceCity(searchResults.firstChoiceCity);
+    displayListOfAlternatives(searchResults.listOfAlternativeCities);
+  } else if (searchResults.listOfAlternativeCities.length === 0) { //No cities in search result
     console.log('No cities found');
   }
 }

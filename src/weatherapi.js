@@ -23,8 +23,11 @@ export default async function getWeather(city) {
 
 export async function search(city) {
   let listOfCities = await getListofCities(city);
-  console.log(listOfCities);
-  return listOfCities;
+  let firstChoiceCity = listOfCities[0];
+  let listOfAlternativeCities = listOfCities.slice(1);
+  console.log(firstChoiceCity);
+  console.log(listOfAlternativeCities);
+  return { firstChoiceCity, listOfAlternativeCities };
 }
 
 function processData(data) {
