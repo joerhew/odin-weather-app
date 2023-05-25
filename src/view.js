@@ -1,4 +1,5 @@
-import getWeather, { search } from './weatherapi.js'
+import getWeather, { search } from './weatherapi.js';
+import { format } from 'date-fns';
 
 //Default values
 const DEFAULT_CITY = 'Toronto'
@@ -18,6 +19,19 @@ export default function init() {
       renderPage(data);
     });
   addListenerToButton();
+}
+
+function createHtmlElement(elementType, innerText, classes, parentNode) {
+  let newElement = document.createElement(elementType);
+  for (let name of classes) {
+    newElement.classList.add(name);
+  }
+  if (innerText) {
+    newElement.innerText = innerText
+  };
+  parentNode.appendChild(newElement);
+
+  return newElement;
 }
 
 function renderPage(data) {
@@ -42,8 +56,8 @@ function renderCurrentWeather(data) {
   currentConditionIcon.src = data.current.condition.icon
   currentConditionDiv.appendChild(currentConditionIcon);
 
+  let currentConditionTextDiv = createHtmlElement('div', data.current.condition.text, [], currentConditionDiv);
   let currentTempDiv = createHtmlElement('div', `${data.current.temp_c} °C`, ['current-temp'], currentConditionDiv);
-  let currentConditionText = createHtmlElement('p', data.current.condition.text, [], currentConditionDiv);
   
   //Current condition - other info
   let currentMiscDiv = createHtmlElement('div', '', ['current-other'], CONTAINER_CURRENT);
@@ -52,31 +66,38 @@ function renderCurrentWeather(data) {
   let currentWind = createHtmlElement('div', `Wind speed: ${data.current.wind_kph} kph`, ['current-wind'], currentMiscDiv);
   let currentHumidity = createHtmlElement('div', `Humidity: ${data.current.humidity}%`, ['current-humidity'], currentMiscDiv);
   let currentPrecip = createHtmlElement('div', `Precipitation: ${data.current.precip_mm} mm`, ['current-precip'], currentMiscDiv);
-  
-  /*CONTAINER_CURRENT.textContent += data.current.temp_c;
-  CONTAINER_CURRENT.textContent += data.current.feelslike_c;
-  CONTAINER_CURRENT.textContent += data.current.wind_kph;
-  CONTAINER_CURRENT.textContent += data.current.humidity;
-  CONTAINER_CURRENT.textContent += data.current.precip_mm;*/
-}
-
-function createHtmlElement(elementType, innerText, classes, parentNode) {
-  let newElement = document.createElement(elementType);
-  for (let name of classes) {
-    newElement.classList.add(name);
-  }
-  if (innerText) {
-    newElement.innerText = innerText
-  };
-  parentNode.appendChild(newElement);
-
-  return newElement;
 }
 
 function renderForecast(data) {
   console.log(data.forecast)
-  data.forecast.forEach(day => {
-    CONTAINER_FORECAST.textContent += day.date;  
+  data.forecast.forEach(forecastDay => {
+    console.log(Date.parse(forecastDay.date));
+    let formattedDate = format(Date.parse(forecastDay.date), 'MMM d, Y');
+    
+    let forecastDayDiv = createHtmlElement('div', '', ['forecast-day'], CONTAINER_FORECAST);
+
+    let forecastDateDiv = createHtmlElement('div', formattedDate, ['forecast-day-date'], forecastDayDiv);
+
+    let forecastConditionIcon = document.createElement('img');
+    forecastConditionIcon.src = forecastDay.day.condition.icon
+    forecastDayDiv.appendChild(forecastConditionIcon);
+
+    let forecastConditionText = createHtmlElement('div', forecastDay.day.condition.text, ['forecast-day-condition'], forecastDayDiv);
+    let avgTempDiv = createHtmlElement('div', `${forecastDay.day.avgtemp_c} °C`, ['forecast-day-condition'], forecastDayDiv);
+
+    let minTempDiv = createHtmlElement('div', `Low: ${forecastDay.day.mintemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
+    let maxTempDiv = createHtmlElement('div', `High: ${forecastDay.day.maxtemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
+    
+    let chanceOfRainDiv = createHtmlElement('div', `Rain: ${forecastDay.day.daily_chance_of_rain || '0'}%`, ['forecast-day-other'], forecastDayDiv);
+    if (forecastDay.day.daily_chance_of_rain) {
+      createHtmlElement('div', `Precip: ${forecastDay.day.totalprecip_mm} mm`, ['forecast-day-other'], forecastDayDiv);
+    }
+
+    let chanceOfSnowDiv = createHtmlElement('div', `Snow: ${forecastDay.day.daily_chance_of_snow || '0'}%`, ['forecast-day-other'], forecastDayDiv);
+    if (forecastDay.day.daily_chance_of_snow) {
+      createHtmlElement('div', `Precip: ${forecastDay.day.totalsnow_cm} cm`, ['forecast-day-other'], forecastDayDiv);
+    }
+
   })
 }
 

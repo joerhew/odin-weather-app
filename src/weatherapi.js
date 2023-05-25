@@ -25,8 +25,6 @@ export async function search(city) {
   let listOfCities = await getListofCities(city);
   let firstChoiceCity = listOfCities[0];
   let listOfAlternativeCities = listOfCities.slice(1);
-  console.log(firstChoiceCity);
-  console.log(listOfAlternativeCities);
   return { firstChoiceCity, listOfAlternativeCities };
 }
 
