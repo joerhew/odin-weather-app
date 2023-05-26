@@ -85,8 +85,8 @@ function renderForecast(data) {
     let forecastConditionText = createHtmlElement('div', forecastDay.day.condition.text, ['forecast-day-condition'], forecastDayDiv);
     let avgTempDiv = createHtmlElement('div', `${forecastDay.day.avgtemp_c} °C`, ['forecast-day-condition'], forecastDayDiv);
 
-    let minTempDiv = createHtmlElement('div', `Low: ${forecastDay.day.mintemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
     let maxTempDiv = createHtmlElement('div', `High: ${forecastDay.day.maxtemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
+    let minTempDiv = createHtmlElement('div', `Low: ${forecastDay.day.mintemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
     
     let chanceOfRainDiv = createHtmlElement('div', `Rain: ${forecastDay.day.daily_chance_of_rain || '0'}%`, ['forecast-day-other'], forecastDayDiv);
     if (forecastDay.day.daily_chance_of_rain) {
