@@ -16,9 +16,13 @@ async function getListofCities(city) {
 }
 
 export default async function getWeather(city) {
-  let rawData = await forecast(city);
-  let processedData = processData(rawData);
-  return processedData;
+  try {
+    let rawData = await forecast(city);
+    let processedData = processData(rawData);
+    return processedData;
+  } catch(err) {
+    return err;
+  }
 }
 
 export async function search(city) {

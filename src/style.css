@@ -1,10 +1,11 @@
 :root {
   --white: #FFFFFF;
   --bg1: #FEF6EC;
-  --bg2: #E9E2D9;
+  --bg2: #f4ece2;
   --card: #EBDCCB;
   --highlight: #CB9558;
   --dark: #49341D;
+  --error: #c24b07;
   --contrast: #538D7B;
   --contrast-dark: #355A4E;
   font-family: 'Playfair', serif;
@@ -16,13 +17,20 @@ body {
   align-items: center;
   background-color: var(--bg1);
   opacity: 0.8;
-  background-image: repeating-radial-gradient( circle at 0 0, transparent 0, var(--bg1) 10px ), repeating-linear-gradient( #e9e2d955, var(--bg2) );
+  background-image: repeating-radial-gradient( circle at 0 0, transparent 0, var(--bg1) 10px ), repeating-linear-gradient( #f4ece255, var(--bg2) );
   color: var(--dark)
 }
 
 img {
   min-height: 5rem;
   min-width: 5rem;
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 input {
@@ -115,6 +123,12 @@ button:hover {
   border-radius: 1rem;
 }
 
+.error {
+  color: var(--error);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
 .current-condition {
   text-align: center;
   font-size: 1.5rem;
@@ -138,7 +152,7 @@ button:hover {
   min-height: 280px;
 }
 
-.forecast-day-date {
+.current-text, .forecast-day-date {
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -153,6 +167,17 @@ margin-bottom: 1rem;
 
 
 @media only screen and (min-width: 900px) {
+  form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .label {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  
   #forecast {
     display: grid;
     gap: 1rem;

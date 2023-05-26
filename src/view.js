@@ -12,11 +12,16 @@ const INPUT_CITY = document.querySelector('#city');
 const BTN_SUBMIT = document.querySelector('#enter-city');
 //Text strings
 const HEADER_TEXT = 'Weather in'
+const ERROR_INPUT_BLANK = 'Please enter a city name.'
+const ERROR_INPUT_UNRECOGNIZED = `Sorry, we didn't recognize the city name. Please try again.`
 
 export default function init() {
   getWeather(DEFAULT_CITY)
     .then(data => {
       renderPage(data);
+    })
+    .catch(error => {
+      renderError(error);
     });
   addListenerToButton();
 }
@@ -36,14 +41,21 @@ function createHtmlElement(elementType, innerText, classes, parentNode) {
 
 function renderPage(data) {
   renderHeader(data);
-  renderCurrentWeather(data);
-  renderForecast(data);
+
+  if (data) {
+    renderCurrentWeather(data);
+    renderForecast(data);
+  }
+}
+
+function renderError(err) {
+  CONTAINER_CURRENT.innerHTML = ''
+  let errorDiv = createHtmlElement('div', ERROR_INPUT_UNRECOGNIZED, ['error'], CONTAINER_CURRENT);
+  HEADER.textContent = 'The Weather App';
 }
 
 function renderHeader(data) {
-  console.log(data.name);
-  console.log(data.country);
-  HEADER.textContent = `${HEADER_TEXT} ${data.name}, ${data.country}`
+  HEADER.textContent = `${HEADER_TEXT} ${data.name}, ${data.country}`;
 }
 
 function renderCurrentWeather(data) {
@@ -52,6 +64,8 @@ function renderCurrentWeather(data) {
   //Current condition text and icon
   let currentConditionDiv = createHtmlElement('div', '', ['current-condition'], CONTAINER_CURRENT);
 
+  let currentTextDiv = createHtmlElement('div', 'Current', ['current-text'], currentConditionDiv);
+  
   let currentConditionIcon = document.createElement('img');
   currentConditionIcon.src = data.current.condition.icon
   currentConditionDiv.appendChild(currentConditionIcon);
@@ -104,12 +118,27 @@ function renderForecast(data) {
 function addListenerToButton() {
   BTN_SUBMIT.addEventListener('click', e => {
     e.preventDefault();
+
+    let previousErrorMsg = document.querySelector('.error');
+      if (previousErrorMsg) {
+        previousErrorMsg.remove();
+      }
+
+    if (INPUT_CITY.value === '') {
+      HEADER.textContent = 'The Weather App';
+      clearPrevData();
+      createHtmlElement('div', ERROR_INPUT_BLANK, ['error'], CONTAINER_CURRENT); 
+    } else {
     clearPrevData();
     clarify(INPUT_CITY.value);
     getWeather(INPUT_CITY.value)
-    .then(data => {
+      .then(data => {
       renderPage(data);
-    });
+      })
+      .catch(error => {
+        renderError(error);
+      })
+    }
   })
 }
 
