@@ -2,14 +2,14 @@ let API_KEY = '081c359ab5aa425cbee205715231805';
 let DAYS = 8;
 
 async function forecast(city) {
-  let apiForecast = `http://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&aqi=no&days=${DAYS}`
+  let apiForecast = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&aqi=no&days=${DAYS}`
   let response =  await fetch(apiForecast, {mode: 'cors'});
   let data = await response.json();
   return data;
 }
 
 async function getListofCities(city) {
-  let apiSearch = `http://api.weatherapi.com/v1/search.json?key=${API_KEY}&q=${city}`
+  let apiSearch = `https://api.weatherapi.com/v1/search.json?key=${API_KEY}&q=${city}`
   let response = await fetch(apiSearch, {mode: 'cors'});
   let data = await response.json();
   return data;
