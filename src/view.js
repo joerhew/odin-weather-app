@@ -48,9 +48,9 @@ function renderPage(data) {
   }
 }
 
-function renderError(err) {
+function renderError() {
   CONTAINER_CURRENT.innerHTML = ''
-  createHtmlElement('div', err /*ERROR_INPUT_UNRECOGNIZED*/, ['error'], CONTAINER_CURRENT);
+  createHtmlElement('div', ERROR_INPUT_UNRECOGNIZED, ['error'], CONTAINER_CURRENT);
   HEADER.textContent = 'The Weather App';
 }
 
@@ -140,8 +140,8 @@ function addListenerToButton() {
       .then(data => {
       renderPage(data);
       })
-      .catch((err) => {
-        renderError(err);
+      .catch(() => {
+        renderError();
       })
     }
   })
