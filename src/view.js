@@ -1,5 +1,5 @@
 import getWeather, { search } from './weatherapi.js';
-import { format } from 'date-fns';
+import { utcToZonedTime, format } from 'date-fns-tz';
 
 //Default values
 const DEFAULT_CITY = 'Toronto'
@@ -48,9 +48,9 @@ function renderPage(data) {
   }
 }
 
-function renderError(err) {
+function renderError() {
   CONTAINER_CURRENT.innerHTML = ''
-  let errorDiv = createHtmlElement('div', ERROR_INPUT_UNRECOGNIZED, ['error'], CONTAINER_CURRENT);
+  createHtmlElement('div', ERROR_INPUT_UNRECOGNIZED, ['error'], CONTAINER_CURRENT);
   HEADER.textContent = 'The Weather App';
 }
 
@@ -64,50 +64,55 @@ function renderCurrentWeather(data) {
   //Current condition text and icon
   let currentConditionDiv = createHtmlElement('div', '', ['current-condition'], CONTAINER_CURRENT);
 
-  let currentTextDiv = createHtmlElement('div', 'Current', ['current-text'], currentConditionDiv);
+  createHtmlElement('div', 'Current', ['current-text'], currentConditionDiv);
   
   let currentConditionIcon = document.createElement('img');
   currentConditionIcon.src = data.current.condition.icon
   currentConditionDiv.appendChild(currentConditionIcon);
 
-  let currentConditionTextDiv = createHtmlElement('div', data.current.condition.text, [], currentConditionDiv);
-  let currentTempDiv = createHtmlElement('div', `${data.current.temp_c} °C`, ['current-temp'], currentConditionDiv);
+  createHtmlElement('div', data.current.condition.text, [], currentConditionDiv);
+  createHtmlElement('div', `${data.current.temp_c} °C`, ['current-temp'], currentConditionDiv);
   
   //Current condition - other info
   let currentMiscDiv = createHtmlElement('div', '', ['current-other'], CONTAINER_CURRENT);
 
-  let currentFeelsLikeDiv = createHtmlElement('div', `Feels like: ${data.current.feelslike_c} °C`, ['current-feels-like'], currentMiscDiv);
-  let currentWind = createHtmlElement('div', `Wind speed: ${data.current.wind_kph} kph`, ['current-wind'], currentMiscDiv);
-  let currentHumidity = createHtmlElement('div', `Humidity: ${data.current.humidity}%`, ['current-humidity'], currentMiscDiv);
-  let currentPrecip = createHtmlElement('div', `Precipitation: ${data.current.precip_mm} mm`, ['current-precip'], currentMiscDiv);
+  createHtmlElement('div', `Feels like: ${data.current.feelslike_c} °C`, ['current-feels-like'], currentMiscDiv);
+  createHtmlElement('div', `Wind speed: ${data.current.wind_kph} kph`, ['current-wind'], currentMiscDiv);
+  createHtmlElement('div', `Humidity: ${data.current.humidity}%`, ['current-humidity'], currentMiscDiv);
+  createHtmlElement('div', `Precipitation: ${data.current.precip_mm} mm`, ['current-precip'], currentMiscDiv);
+}
+
+function formatDate(date) {
+  const utcDate = utcToZonedTime(date, 'Etc/UTC');
+  return format(utcDate, 'MMM d, Y', { timezone: 'Etc/UTC'});
 }
 
 function renderForecast(data) {
   console.log(data.forecast)
   data.forecast.forEach(forecastDay => {
     console.log(Date.parse(forecastDay.date));
-    let formattedDate = format(Date.parse(forecastDay.date), 'MMM d, Y');
+    let formattedDate =  formatDate(forecastDay.date);
     
     let forecastDayDiv = createHtmlElement('div', '', ['forecast-day'], CONTAINER_FORECAST);
 
-    let forecastDateDiv = createHtmlElement('div', formattedDate, ['forecast-day-date'], forecastDayDiv);
+    createHtmlElement('div', formattedDate, ['forecast-day-date'], forecastDayDiv);
 
     let forecastConditionIcon = document.createElement('img');
     forecastConditionIcon.src = forecastDay.day.condition.icon
     forecastDayDiv.appendChild(forecastConditionIcon);
 
-    let forecastConditionText = createHtmlElement('div', forecastDay.day.condition.text, ['forecast-day-condition'], forecastDayDiv);
-    let avgTempDiv = createHtmlElement('div', `${forecastDay.day.avgtemp_c} °C`, ['forecast-day-condition'], forecastDayDiv);
+    createHtmlElement('div', forecastDay.day.condition.text, ['forecast-day-condition'], forecastDayDiv);
+    createHtmlElement('div', `${forecastDay.day.avgtemp_c} °C`, ['forecast-day-condition'], forecastDayDiv);
 
-    let maxTempDiv = createHtmlElement('div', `High: ${forecastDay.day.maxtemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
-    let minTempDiv = createHtmlElement('div', `Low: ${forecastDay.day.mintemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
+    createHtmlElement('div', `High: ${forecastDay.day.maxtemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
+    createHtmlElement('div', `Low: ${forecastDay.day.mintemp_c} °C`, ['forecast-day-other'], forecastDayDiv);
     
-    let chanceOfRainDiv = createHtmlElement('div', `Rain: ${forecastDay.day.daily_chance_of_rain || '0'}%`, ['forecast-day-other'], forecastDayDiv);
+    createHtmlElement('div', `Rain: ${forecastDay.day.daily_chance_of_rain || '0'}%`, ['forecast-day-other'], forecastDayDiv);
     if (forecastDay.day.daily_chance_of_rain) {
       createHtmlElement('div', `Precip: ${forecastDay.day.totalprecip_mm} mm`, ['forecast-day-other'], forecastDayDiv);
     }
 
-    let chanceOfSnowDiv = createHtmlElement('div', `Snow: ${forecastDay.day.daily_chance_of_snow || '0'}%`, ['forecast-day-other'], forecastDayDiv);
+    createHtmlElement('div', `Snow: ${forecastDay.day.daily_chance_of_snow || '0'}%`, ['forecast-day-other'], forecastDayDiv);
     if (forecastDay.day.daily_chance_of_snow) {
       createHtmlElement('div', `Precip: ${forecastDay.day.totalsnow_cm} cm`, ['forecast-day-other'], forecastDayDiv);
     }
@@ -135,8 +140,8 @@ function addListenerToButton() {
       .then(data => {
       renderPage(data);
       })
-      .catch(error => {
-        renderError(error);
+      .catch(() => {
+        renderError();
       })
     }
   })
