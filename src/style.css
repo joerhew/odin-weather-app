@@ -181,8 +181,7 @@ margin-bottom: 1rem;
   #forecast {
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(8, 1fr);
-    overflow: auto;
+    grid-template-columns: repeat(3, 1fr);
     white-space: nowrap;
   }
 

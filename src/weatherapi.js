@@ -5,6 +5,7 @@ async function forecast(city) {
   let apiForecast = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&aqi=no&days=${DAYS}`
   let response =  await fetch(apiForecast, {mode: 'cors'});
   let data = await response.json();
+  console.log(data)
   return data;
 }
 
